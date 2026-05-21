@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Couscous con zucchine — Ricetta</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playwrite+GB+S+Guides&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container" id="app">
+    <header class="recipe-header">
+      <h1 class="recipe-title">Couscous con zucchine</h1>
+      <p class="recipe-chef">di Cucua</p>
+    </header>
+
+    <section class="card ingredients-card" id="ingredients-card">
+      <h2 class="card-title">Ingredienti</h2>
+      <div class="serving-adjuster">
+        <span class="serving-label">Porzioni:</span>
+        <button class="serving-btn" id="serving-minus" aria-label="Diminuisci porzioni">−</button>
+        <span class="serving-count" id="serving-count">1</span>
+        <button class="serving-btn" id="serving-plus" aria-label="Aumenta porzioni">+</button>
+      </div>
+      <ul class="ingredients-list" id="ingredients-list"></ul>
+      <button class="btn btn-start" id="btn-start-cooking">Inizia la cottura</button>
+    </section>
+
+    <section class="card cooking-panel" id="cooking-panel" style="display: none;">
+      <h2 class="card-title">Passaggi</h2>
+
+      <div class="timer-bar" id="timer-bar"></div>
+
+      <div class="step-dots" id="step-dots"></div>
+
+      <div class="step-content" id="step-content"></div>
+
+      <div class="step-nav">
+        <button class="btn btn-nav" id="btn-prev" disabled>Precedente</button>
+        <button class="btn btn-nav btn-primary" id="btn-next">Avanti</button>
+      </div>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,315 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Georgia, 'Times New Roman', serif;
+  background-color: #F5EDE0;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  color: #3A2210;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem 1rem;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 720px;
+  width: 100%;
+}
+
+.recipe-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.recipe-title {
+  font-family: 'Playwrite GB S Guides', cursive;
+  font-size: 2.2rem;
+  color: #5C3A21;
+  margin-bottom: 0.25rem;
+  line-height: 1.3;
+}
+
+.recipe-chef {
+  font-size: 1rem;
+  color: #8B6350;
+  font-style: italic;
+}
+
+.card {
+  background: #FFF8F0;
+  border-radius: 20px;
+  padding: 2rem 1.5rem;
+  box-shadow: 0 4px 20px rgba(92, 58, 33, 0.12), 0 1px 4px rgba(92, 58, 33, 0.08);
+  border: 1px solid #E8D5C0;
+  margin-bottom: 1.5rem;
+}
+
+.card-title {
+  font-family: Georgia, serif;
+  font-size: 1.3rem;
+  color: #5C3A21;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #DCC5AD;
+}
+
+.serving-adjuster {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  font-size: 1.1rem;
+}
+
+.serving-label {
+  color: #8B6350;
+  font-weight: bold;
+}
+
+.serving-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #6B8E23;
+  background: #E8F0D8;
+  color: #5C3A21;
+  font-size: 1.4rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(107, 142, 35, 0.2);
+}
+
+.serving-btn:hover:not(:disabled) {
+  background: #6B8E23;
+  color: #FFF;
+  transform: scale(1.05);
+}
+
+.serving-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.serving-count {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #5C3A21;
+  min-width: 30px;
+  text-align: center;
+}
+
+.ingredients-list {
+  list-style: none;
+  margin-bottom: 1.5rem;
+}
+
+.ingredients-list li {
+  padding: 0.5rem 0;
+  border-bottom: 1px dashed #E8D5C0;
+  font-size: 1.05rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ingredients-list li:last-child {
+  border-bottom: none;
+}
+
+.ingredient-amount {
+  font-weight: bold;
+  color: #6B8E23;
+  white-space: nowrap;
+}
+
+.btn {
+  font-family: Georgia, serif;
+  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 40px;
+  border: 2px solid #8B6350;
+  background: #FFF8F0;
+  color: #5C3A21;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 3px 10px rgba(92, 58, 33, 0.1);
+  font-weight: bold;
+}
+
+.btn:hover:not(:disabled) {
+  background: #8B6350;
+  color: #FFF;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(92, 58, 33, 0.15);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-primary {
+  background: #D4A574;
+  border-color: #D4A574;
+  color: #FFF;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #C49464;
+  border-color: #C49464;
+}
+
+.btn-start {
+  display: block;
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.15rem;
+  background: #6B8E23;
+  border-color: #6B8E23;
+  color: #FFF;
+  box-shadow: 0 4px 15px rgba(107, 142, 35, 0.3);
+}
+
+.btn-start:hover {
+  background: #5A7A1C;
+  border-color: #5A7A1C;
+}
+
+.timer-bar {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  min-height: 40px;
+}
+
+.timer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1rem;
+  border-radius: 30px;
+  background: #FFF0D0;
+  border: 2px solid #D4A574;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #5C3A21;
+  box-shadow: 0 2px 8px rgba(212, 165, 116, 0.3);
+  animation: timerPulse 2s infinite;
+}
+
+@keyframes timerPulse {
+  0%, 100% { box-shadow: 0 2px 8px rgba(212, 165, 116, 0.3); }
+  50% { box-shadow: 0 2px 16px rgba(212, 165, 116, 0.6); }
+}
+
+.timer-badge.expired {
+  background: #F5D0C0;
+  border-color: #C46850;
+  animation: timerFlash 0.5s ease-in-out 3;
+}
+
+@keyframes timerFlash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.step-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.step-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #DCC5AD;
+  border: 2px solid #C4AD95;
+  transition: all 0.3s ease;
+}
+
+.step-dot.active {
+  background: #6B8E23;
+  border-color: #5A7A1C;
+  transform: scale(1.2);
+}
+
+.step-dot.completed {
+  background: #8FBC6F;
+  border-color: #6B8E23;
+}
+
+.step-content {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: #3A2210;
+  margin-bottom: 1.5rem;
+  padding: 1rem 0.5rem;
+  min-height: 100px;
+}
+
+.step-timer-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.7rem 1.5rem;
+  border-radius: 40px;
+  border: 2px solid #D4A574;
+  background: #FFF0D0;
+  color: #5C3A21;
+  font-family: Georgia, serif;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 3px 12px rgba(212, 165, 116, 0.35);
+}
+
+.step-timer-btn:hover:not(:disabled) {
+  background: #D4A574;
+  color: #FFF;
+  transform: scale(1.03);
+}
+
+.step-timer-btn.running {
+  background: #D4A574;
+  color: #FFF;
+  border-color: #C49464;
+  cursor: default;
+}
+
+.step-timer-btn.done {
+  background: #6B8E23;
+  color: #FFF;
+  border-color: #5A7A1C;
+  cursor: default;
+}
+
+.step-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 2px solid #E8D5C0;
+}
+
+.btn-nav {
+  flex: 1;
+  max-width: 160px;
+}

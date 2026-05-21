@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L-Shape Weave Pattern Tool</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #f5f5f5; color: #222; height: 100vh; overflow: hidden; }
+#app { display: flex; height: 100vh; }
+#canvas-area { flex: 1; display: flex; align-items: center; justify-content: center; background: #fff; overflow: hidden; }
+#pattern-svg { display: block; max-width: 100%; max-height: 100%; }
+#controls { width: 280px; min-width: 280px; padding: 16px; overflow-y: auto; background: #fafafa; border-left: 1px solid #ddd; }
+.control-group { margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #eee; }
+.control-group:last-child { border-bottom: none; }
+.control-group h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 8px; user-select: none; }
+.control-row { display: flex; align-items: center; margin-bottom: 6px; gap: 8px; }
+.control-row label { font-size: 13px; flex: 0 0 85px; color: #555; user-select: none; }
+.control-row input[type="range"] { flex: 1; }
+.control-row input[type="number"] { width: 50px; padding: 2px 4px; font-size: 12px; border: 1px solid #ccc; border-radius: 3px; }
+.control-row input[type="color"] { width: 32px; height: 28px; padding: 0; border: 1px solid #ccc; border-radius: 3px; cursor: pointer; }
+.control-row select { flex: 1; padding: 3px 4px; font-size: 12px; border: 1px solid #ccc; border-radius: 3px; background: #fff; }
+.control-row .value { font-size: 12px; min-width: 30px; text-align: right; color: #333; }
+.control-row .checkbox-label { font-size: 13px; color: #555; user-select: none; cursor: pointer; display: flex; align-items: center; gap: 6px; flex: 0 0 auto; }
+.control-row .checkbox-label input { margin: 0; }
+.btn-export { padding: 8px 16px; font-size: 13px; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; background: #fff; width: 100%; margin-bottom: 6px; }
+.btn-export:hover { background: #eee; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="canvas-area">
+    <svg id="pattern-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+  <div id="controls">
+    <div class="control-group">
+      <h3>Grid</h3>
+      <div class="control-row">
+        <label for="cfg-cols">Columns</label>
+        <input type="number" id="cfg-cols" min="1" max="100">
+      </div>
+      <div class="control-row">
+        <label for="cfg-rows">Rows</label>
+        <input type="number" id="cfg-rows" min="1" max="100">
+      </div>
+      <div class="control-row">
+        <label for="cfg-spacing">Spacing</label>
+        <input type="range" id="cfg-spacing" min="5" max="500" step="1">
+        <span class="value" id="val-spacing">60</span>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <h3>Arms</h3>
+      <div class="control-row">
+        <label for="cfg-armA">Arm A</label>
+        <input type="range" id="cfg-armA" min="1" max="300" step="1">
+      </div>
+      <div class="control-row">
+        <label for="cfg-armB">Arm B</label>
+        <input type="range" id="cfg-armB" min="1" max="300" step="1">
+        <span class="value" id="val-armB">30</span>
+      </div>
+      <div class="control-row">
+        <label for="cfg-armLocked" class="checkbox-label">
+          <input type="checkbox" id="cfg-armLocked" checked>
+          Lock arms
+        </label>
+      </div>
+      <div class="control-row">
+        <label for="cfg-strokeWidth">Stroke</label>
+        <input type="range" id="cfg-strokeWidth" min="0.5" max="50" step="0.5">
+        <span class="value" id="val-strokeWidth">2</span>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <h3>Colors</h3>
+      <div class="control-row">
+        <label for="cfg-strokeColor">Stroke</label>
+        <input type="color" id="cfg-strokeColor">
+      </div>
+      <div class="control-row">
+        <label for="cfg-bgColor">Background</label>
+        <input type="color" id="cfg-bgColor">
+      </div>
+    </div>
+
+    <div class="control-group">
+      <h3>Pattern</h3>
+      <div class="control-row">
+        <label for="cfg-patternType">Type</label>
+        <select id="cfg-patternType">
+          <option value="sine">Sine Wave</option>
+          <option value="gradient">Gradient</option>
+          <option value="checker">Checker</option>
+          <option value="spiral">Spiral</option>
+        </select>
+      </div>
+      <div class="control-row">
+        <label for="cfg-freqX">Freq X</label>
+        <input type="range" id="cfg-freqX" min="0" max="20" step="0.1">
+      </div>
+      <div class="control-row">
+        <label for="cfg-freqY">Freq Y</label>
+        <input type="range" id="cfg-freqY" min="0" max="20" step="0.1">
+        <span class="value" id="val-freqY">1</span>
+      </div>
+      <div class="control-row">
+        <label for="cfg-amplitude">Amplitude</label>
+        <input type="range" id="cfg-amplitude" min="0" max="360" step="1">
+        <span class="value" id="val-amplitude">90</span>
+      </div>
+      <div class="control-row">
+        <label for="cfg-phase">Phase</label>
+        <input type="range" id="cfg-phase" min="0" max="360" step="1">
+        <span class="value" id="val-phase">0</span>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <h3>Interlocking</h3>
+      <div class="control-row">
+        <label for="cfg-interlockMode">Mode</label>
+        <select id="cfg-interlockMode">
+          <option value="gap">Gap</option>
+          <option value="opacity">Opacity</option>
+          <option value="off">Off</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <h3>Export</h3>
+      <button class="btn-export" id="btn-export-svg">Export SVG</button>
+      <button class="btn-export" id="btn-export-png">Export PNG</button>
+    </div>
+  </div>
+</div>
+<script>
+const cfg = {
+  cols: 10,
+  rows: 10,
+  spacing: 60,
+  armA: 30,
+  armB: 30,
+  armLocked: true,
+  strokeWidth: 2,
+  strokeColor: '#222222',
+  bgColor: '#ffffff',
+  patternType: 'sine',
+  freqX: 1,
+  freqY: 1,
+  amplitude: 90,
+  phase: 0,
+  interlockMode: 'gap',
+  seed: 42
+};
+
+function segmentLength(seg) {
+  const dx = seg.x2 - seg.x1;
+  const dy = seg.y2 - seg.y1;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
+function generateLShapes(cols, rows, spacing) {
+  const shapes = [];
+  const offsetX = (cols - 1) * spacing / 2;
+  const offsetY = (rows - 1) * spacing / 2;
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      const cx = col * spacing - offsetX;
+      const cy = row * spacing - offsetY;
+      shapes.push({ cx, cy, col, row, id: `s${row}-${col}` });
+    }
+  }
+  return shapes;
+}
+
+function getAngle(col, row, cols, rows, patternType, freqX, freqY, amplitude, phase) {
+  const ph = phase * Math.PI / 180;
+  const amp = amplitude * Math.PI / 180;
+  const nx = cols > 1 ? col / (cols - 1) : 0.5;
+  const ny = rows > 1 ? row / (rows - 1) : 0.5;
+  switch (patternType) {
+    case 'sine': return amp * (Math.sin(nx * freqX * 2 * Math.PI + ph) + Math.cos(ny * freqY * 2 * Math.PI + ph)) / 2;
+    case 'gradient': return amp * ((nx + ny) / 2);
+    case 'checker': return ((col + row) % 2 === 0) ? amp : -amp;
+    case 'spiral': {
+      const cx2 = (col - (cols-1)/2) / Math.max(cols, rows);
+      const cy2 = (row - (rows-1)/2) / Math.max(cols, rows);
+      const dist = Math.sqrt(cx2*cx2 + cy2*cy2);
+      const angle = Math.atan2(cy2, cx2);
+      return amp * Math.sin(dist * 4 * Math.PI + angle + ph) / 2;
+    }
+    default: return 0;
+  }
+}
+
+function shapeToSegments(shape, lenA, lenB, angle) {
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+  const perpCos = Math.cos(angle + Math.PI / 2);
+  const perpSin = Math.sin(angle + Math.PI / 2);
+  return [
+    { x1: shape.cx, y1: shape.cy, x2: shape.cx + lenA * cos, y2: shape.cy + lenA * sin, shapeId: shape.id, segIdx: 0 },
+    { x1: shape.cx, y1: shape.cy, x2: shape.cx + lenB * perpCos, y2: shape.cy + lenB * perpSin, shapeId: shape.id, segIdx: 1 }
+  ];
+}
+
+function buildAllSegments(cfg) {
+  const shapes = generateLShapes(cfg.cols, cfg.rows, cfg.spacing);
+  const lenA = cfg.armA;
+  const lenB = cfg.armLocked ? cfg.armA : cfg.armB;
+  const segments = [];
+  for (const shape of shapes) {
+    const angle = getAngle(shape.col, shape.row, cfg.cols, cfg.rows, cfg.patternType, cfg.freqX, cfg.freqY, cfg.amplitude, cfg.phase);
+    const segs = shapeToSegments(shape, lenA, lenB, angle);
+    segments.push(...segs);
+  }
+  return { shapes, segments };
+}
+
+function segmentIntersection(s1, s2) {
+  const dx1 = s1.x2 - s1.x1, dy1 = s1.y2 - s1.y1;
+  const dx2 = s2.x2 - s2.x1, dy2 = s2.y2 - s2.y1;
+  const denom = dx1 * dy2 - dy1 * dx2;
+  if (Math.abs(denom) < 1e-10) return null;
+  const t = ((s2.x1 - s1.x1) * dy2 - (s2.y1 - s1.y1) * dx2) / denom;
+  const u = ((s2.x1 - s1.x1) * dy1 - (s2.y1 - s1.y1) * dx1) / denom;
+  if (t > 1e-6 && t < 1 - 1e-6 && u > 1e-6 && u < 1 - 1e-6) {
+    return { x: s1.x1 + t * dx1, y: s1.y1 + t * dy1, t, u, segA: s1, segB: s2 };
+  }
+  return null;
+}
+
+function findAllIntersections(segments) {
+  const intersections = [];
+  for (let i = 0; i < segments.length; i++) {
+    for (let j = i + 1; j < segments.length; j++) {
+      const pt = segmentIntersection(segments[i], segments[j]);
+      if (pt) intersections.push(pt);
+    }
+  }
+  return intersections;
+}
+
+function splitSegments(segments, intersections) {
+  const splitMap = new Map();
+  for (const seg of segments) splitMap.set(seg, []);
+  for (const pt of intersections) {
+    splitMap.get(pt.segA).push({ t: pt.t, x: pt.x, y: pt.y, pt });
+    splitMap.get(pt.segB).push({ t: pt.u, x: pt.x, y: pt.y, pt });
+  }
+  const result = [];
+  for (const [seg, pts] of splitMap) {
+    pts.sort((a, b) => a.t - b.t);
+    let prevT = 0;
+    let tIdx = 0;
+    for (const p of pts) {
+      if (p.t > prevT + 1e-6) {
+        result.push({
+          x1: seg.x1 + prevT * (seg.x2 - seg.x1),
+          y1: seg.y1 + prevT * (seg.y2 - seg.y1),
+          x2: p.x, y2: p.y,
+          tStart: prevT, tEnd: p.t,
+          parentSeg: seg, idx: tIdx++
+        });
+      }
+      prevT = p.t;
+    }
+    if (prevT < 1 - 1e-6) {
+      result.push({
+        x1: seg.x1 + prevT * (seg.x2 - seg.x1),
+        y1: seg.y1 + prevT * (seg.y2 - seg.y1),
+        x2: seg.x2, y2: seg.y2,
+        tStart: prevT, tEnd: 1,
+        parentSeg: seg, idx: tIdx++
+      });
+    }
+  }
+  return result;
+}
+
+function assignOverUnder(segments, intersections) {
+  const assignments = new Map();
+  for (const pt of intersections) {
+    const keyA = pt.segA.shapeId + '-' + pt.segA.segIdx;
+    const keyB = pt.segB.shapeId + '-' + pt.segB.segIdx;
+    if (!assignments.has(keyA)) assignments.set(keyA, []);
+    if (!assignments.has(keyB)) assignments.set(keyB, []);
+    assignments.get(keyA).push({ t: pt.t, pt, seg: pt.segA, key: keyA, otherKey: keyB });
+    assignments.get(keyB).push({ t: pt.u, pt, seg: pt.segB, key: keyB, otherKey: keyA });
+  }
+  for (const [, pts] of assignments) {
+    pts.sort((a, b) => a.t - b.t);
+    let isOver = true;
+    for (const p of pts) {
+      p.isOver = isOver;
+      isOver = !isOver;
+    }
+  }
+  for (const pt of intersections) {
+    const keyA = pt.segA.shapeId + '-' + pt.segA.segIdx;
+    const keyB = pt.segB.shapeId + '-' + pt.segB.segIdx;
+    const entryA = assignments.get(keyA).find(e => e.pt === pt);
+    const entryB = assignments.get(keyB).find(e => e.pt === pt);
+    if (entryA && entryB && entryA.isOver === entryB.isOver) {
+      entryA.isOver = true;
+      entryB.isOver = false;
+    }
+  }
+  return assignments;
+}
+
+function renderPattern(cfg) {
+  const { segments } = buildAllSegments(cfg);
+  const intersections = findAllIntersections(segments);
+  const assignments = assignOverUnder(segments, intersections);
+
+  const crossingMap = new Map();
+  for (const pt of intersections) {
+    const keyA = pt.segA.shapeId + '-' + pt.segA.segIdx;
+    const keyB = pt.segB.shapeId + '-' + pt.segB.segIdx;
+    const entryA = assignments.get(keyA)?.find(e => e.pt === pt);
+    const entryB = assignments.get(keyB)?.find(e => e.pt === pt);
+    crossingMap.set(pt, { aOver: entryA ? entryA.isOver : true, bOver: entryB ? entryB.isOver : true });
+  }
+
+  const svg = document.getElementById('pattern-svg');
+  svg.innerHTML = '';
+  const ns = 'http://www.w3.org/2000/svg';
+  const padding = 40;
+
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (const seg of segments) {
+    minX = Math.min(minX, seg.x1, seg.x2);
+    maxX = Math.max(maxX, seg.x1, seg.x2);
+    minY = Math.min(minY, seg.y1, seg.y2);
+    maxY = Math.max(maxY, seg.y1, seg.y2);
+  }
+  if (!isFinite(minX)) { minX = -padding; maxX = padding; minY = -padding; maxY = padding; }
+  const viewW = maxX - minX + padding * 2;
+  const viewH = maxY - minY + padding * 2;
+  svg.setAttribute('viewBox', (minX - padding) + ' ' + (minY - padding) + ' ' + viewW + ' ' + viewH);
+
+  const bg = document.createElementNS(ns, 'rect');
+  bg.setAttribute('x', minX - padding);
+  bg.setAttribute('y', minY - padding);
+  bg.setAttribute('width', viewW);
+  bg.setAttribute('height', viewH);
+  bg.setAttribute('fill', cfg.bgColor);
+  svg.appendChild(bg);
+
+  if (cfg.interlockMode === 'off') {
+    for (const seg of segments) {
+      const line = document.createElementNS(ns, 'line');
+      line.setAttribute('x1', seg.x1);
+      line.setAttribute('y1', seg.y1);
+      line.setAttribute('x2', seg.x2);
+      line.setAttribute('y2', seg.y2);
+      line.setAttribute('stroke', cfg.strokeColor);
+      line.setAttribute('stroke-width', cfg.strokeWidth);
+      line.setAttribute('stroke-linecap', 'round');
+      svg.appendChild(line);
+    }
+    sizeSVG();
+    return;
+  }
+
+  if (cfg.interlockMode === 'gap') {
+    const gapPx = cfg.strokeWidth * 0.5;
+    const drawRanges = new Map();
+    for (const seg of segments) drawRanges.set(seg, [{ tStart: 0, tEnd: 1 }]);
+    for (const pt of intersections) {
+      const entry = crossingMap.get(pt);
+      for (const side of [
+        { seg: pt.segA, isOverKey: 'aOver', t: pt.t },
+        { seg: pt.segB, isOverKey: 'bOver', t: pt.u }
+      ]) {
+        if (!entry[side.isOverKey]) {
+          const ranges = drawRanges.get(side.seg);
+          if (!ranges) continue;
+          const len = segmentLength(side.seg);
+          const gapT = len > 0 ? gapPx / len : 0;
+          const gapStart = Math.max(0, side.t - gapT / 2);
+          const gapEnd = Math.min(1, side.t + gapT / 2);
+          const newRanges = [];
+          for (const r of ranges) {
+            if (r.tStart >= gapEnd || r.tEnd <= gapStart) {
+              newRanges.push(r);
+            } else {
+              if (r.tStart < gapStart) newRanges.push({ tStart: r.tStart, tEnd: gapStart });
+              if (r.tEnd > gapEnd) newRanges.push({ tStart: gapEnd, tEnd: r.tEnd });
+            }
+          }
+          drawRanges.set(side.seg, newRanges);
+        }
+      }
+    }
+    for (const [seg, ranges] of drawRanges) {
+      for (const r of ranges) {
+        const x1 = seg.x1 + r.tStart * (seg.x2 - seg.x1);
+        const y1 = seg.y1 + r.tStart * (seg.y2 - seg.y1);
+        const x2 = seg.x1 + r.tEnd * (seg.x2 - seg.x1);
+        const y2 = seg.y1 + r.tEnd * (seg.y2 - seg.y1);
+        const line = document.createElementNS(ns, 'line');
+        line.setAttribute('x1', x1);
+        line.setAttribute('y1', y1);
+        line.setAttribute('x2', x2);
+        line.setAttribute('y2', y2);
+        line.setAttribute('stroke', cfg.strokeColor);
+        line.setAttribute('stroke-width', cfg.strokeWidth);
+        line.setAttribute('stroke-linecap', 'round');
+        svg.appendChild(line);
+      }
+    }
+    sizeSVG();
+    return;
+  }
+
+  // Opacity mode
+  const intervals = [];
+  for (const seg of segments) {
+    const pts = intersections
+      .filter(pt => pt.segA === seg || pt.segB === seg)
+      .map(pt => ({ t: pt.segA === seg ? pt.t : pt.u, pt }))
+      .sort((a, b) => a.t - b.t);
+    let prevT = 0;
+    let prevOver = true;
+    for (const p of pts) {
+      if (p.t > prevT + 1e-6) {
+        intervals.push({ seg, tStart: prevT, tEnd: p.t, isOver: prevOver });
+      }
+      const key = seg.shapeId + '-' + seg.segIdx;
+      const entry = assignments.get(key)?.find(e => e.pt === p.pt);
+      prevOver = entry ? entry.isOver : true;
+      prevT = p.t;
+    }
+    if (prevT < 1 - 1e-6) {
+      intervals.push({ seg, tStart: prevT, tEnd: 1, isOver: prevOver });
+    }
+  }
+  for (const intv of intervals) {
+    const x1 = intv.seg.x1 + intv.tStart * (intv.seg.x2 - intv.seg.x1);
+    const y1 = intv.seg.y1 + intv.tStart * (intv.seg.y2 - intv.seg.y1);
+    const x2 = intv.seg.x1 + intv.tEnd * (intv.seg.x2 - intv.seg.x1);
+    const y2 = intv.seg.y1 + intv.tEnd * (intv.seg.y2 - intv.seg.y1);
+    const line = document.createElementNS(ns, 'line');
+    line.setAttribute('x1', x1);
+    line.setAttribute('y1', y1);
+    line.setAttribute('x2', x2);
+    line.setAttribute('y2', y2);
+    line.setAttribute('stroke', cfg.strokeColor);
+    line.setAttribute('stroke-width', cfg.strokeWidth);
+    line.setAttribute('stroke-linecap', 'round');
+    if (!intv.isOver) line.setAttribute('opacity', '0.25');
+    svg.appendChild(line);
+  }
+
+  sizeSVG();
+}
+
+function sizeSVG() {
+  const svg = document.getElementById('pattern-svg');
+  const container = document.getElementById('canvas-area');
+  if (!svg.getAttribute('viewBox')) return;
+  const rect = container.getBoundingClientRect();
+  const vb = svg.getAttribute('viewBox').split(' ').map(Number);
+  const aspect = vb[2] / vb[3];
+  let w = rect.width - 20;
+  let h = rect.height - 20;
+  if (w / h > aspect) { w = h * aspect; } else { h = w / aspect; }
+  svg.setAttribute('width', Math.max(w, 100));
+  svg.setAttribute('height', Math.max(h, 100));
+}
+
+function exportSVG() {
+  const svg = document.getElementById('pattern-svg');
+  const serializer = new XMLSerializer();
+  const svgStr = serializer.serializeToString(svg);
+  const blob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'weave-pattern.svg';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportPNG() {
+  const svg = document.getElementById('pattern-svg');
+  const serializer = new XMLSerializer();
+  const svgStr = serializer.serializeToString(svg);
+  const svgBlob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(svgBlob);
+  const img = new Image();
+  img.onload = () => {
+    const scale = 4;
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width * scale;
+    canvas.height = img.height * scale;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(scale, scale);
+    ctx.drawImage(img, 0, 0);
+    canvas.toBlob((blob) => {
+      const pngUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = pngUrl;
+      a.download = 'weave-pattern.png';
+      a.click();
+      URL.revokeObjectURL(pngUrl);
+    });
+    URL.revokeObjectURL(url);
+  };
+  img.src = url;
+}
+
+function bindControls() {
+  const rangeBindings = [
+    'spacing', 'armA', 'armB', 'strokeWidth', 'freqX', 'freqY', 'amplitude', 'phase'
+  ];
+  for (const key of rangeBindings) {
+    const el = document.getElementById('cfg-' + key);
+    const valEl = document.getElementById('val-' + key);
+    if (!el) continue;
+    el.addEventListener('input', () => {
+      cfg[key] = parseFloat(el.value);
+      if (valEl) valEl.textContent = el.value;
+      if (key === 'armA' && cfg.armLocked) {
+        cfg.armB = cfg.armA;
+        const armBEl = document.getElementById('cfg-armB');
+        const valB = document.getElementById('val-armB');
+        if (armBEl) armBEl.value = cfg.armA;
+        if (valB) valB.textContent = cfg.armA;
+      }
+      renderPattern(cfg);
+    });
+  }
+
+  const numBindings = ['cols', 'rows'];
+  for (const key of numBindings) {
+    const el = document.getElementById('cfg-' + key);
+    if (!el) continue;
+    el.addEventListener('change', () => {
+      cfg[key] = parseInt(el.value, 10) || 1;
+      renderPattern(cfg);
+    });
+  }
+
+  const colorBindings = ['strokeColor', 'bgColor'];
+  for (const key of colorBindings) {
+    const el = document.getElementById('cfg-' + key);
+    if (!el) continue;
+    el.addEventListener('input', () => {
+      cfg[key] = el.value;
+      renderPattern(cfg);
+    });
+  }
+
+  const selectBindings = ['patternType', 'interlockMode'];
+  for (const key of selectBindings) {
+    const el = document.getElementById('cfg-' + key);
+    if (!el) continue;
+    el.addEventListener('change', () => {
+      cfg[key] = el.value;
+      renderPattern(cfg);
+    });
+  }
+
+  const lockEl = document.getElementById('cfg-armLocked');
+  if (lockEl) {
+    lockEl.addEventListener('change', () => {
+      cfg.armLocked = lockEl.checked;
+      const armBEl = document.getElementById('cfg-armB');
+      if (cfg.armLocked) {
+        armBEl.disabled = true;
+        cfg.armB = cfg.armA;
+        armBEl.value = cfg.armA;
+        const valB = document.getElementById('val-armB');
+        if (valB) valB.textContent = cfg.armA;
+      } else {
+        armBEl.disabled = false;
+      }
+      renderPattern(cfg);
+    });
+  }
+
+  document.getElementById('btn-export-svg').addEventListener('click', exportSVG);
+  document.getElementById('btn-export-png').addEventListener('click', exportPNG);
+}
+
+function initControls() {
+  for (const key of [    'cols', 'rows', 'spacing', 'armA', 'armB', 'strokeWidth', 'freqX', 'freqY', 'amplitude', 'phase']) {
+    const el = document.getElementById('cfg-' + key);
+    const valEl = document.getElementById('val-' + key);
+    if (el) el.value = cfg[key];
+    if (valEl) valEl.textContent = cfg[key];
+  }
+  for (const key of ['strokeColor', 'bgColor']) {
+    const el = document.getElementById('cfg-' + key);
+    if (el) el.value = cfg[key];
+  }
+  for (const key of ['patternType', 'interlockMode']) {
+    const el = document.getElementById('cfg-' + key);
+    if (el) el.value = cfg[key];
+  }
+  const lockEl = document.getElementById('cfg-armLocked');
+  if (lockEl) lockEl.checked = cfg.armLocked;
+  const armBEl = document.getElementById('cfg-armB');
+  if (armBEl) armBEl.disabled = cfg.armLocked;
+}
+
+initControls();
+bindControls();
+renderPattern(cfg);
+
+window.addEventListener('resize', () => sizeSVG());
+</script>
+</body>
+</html>
