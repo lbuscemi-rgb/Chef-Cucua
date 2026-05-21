@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maschera Sonora</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #1a1a2e;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: system-ui, sans-serif;
+  }
+  .container {
+    position: relative;
+    width: 595px;
+    max-width: 100vw;
+  }
+  svg { width: 100%; height: auto; display: block; }
+  .layer { position: absolute; top: 0; left: 0; width: 100%; height: auto; }
+  #error-msg {
+    display: none;
+    position: absolute;
+    bottom: -40px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: #e6262e;
+    font-size: 14px;
+  }
+  #error-msg.visible { display: block; }
+  #level-indicator {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #fff;
+    font-family: monospace;
+    font-size: 14px;
+    background: rgba(0,0,0,0.5);
+    padding: 4px 12px;
+    border-radius: 4px;
+  }
+  #start-hint {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-size: 18px;
+    background: rgba(0,0,0,0.7);
+    padding: 16px 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 10;
+    text-align: center;
+  }
+  #start-hint.hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div id="start-hint">Clicca per attivare il microfono</div>
+
+<div class="container">
+  <svg class="layer" id="quiete" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 595.3 841.9">
+    <defs>
+      <style>
+        .q-st0 { fill: #0e0d0e; }
+        .q-st1 { fill: #3766af; }
+        .q-st2 { fill: #e6262e; }
+        .q-st3 { fill: #fff; }
+        .q-st4 { fill: #ffd625; }
+        .q-st5 { display: none; fill: #ed6d70; }
+        .q-st6 { fill: #e0e0e0; }
+      </style>
+    </defs>
+    <g id="forma">
+      <path class="q-st5" d="M-204.8,249.6"/>
+      <path class="q-st4" d="M515.5,794.2V194.9c-26.9-87.3-108.1-147.2-199.4-147.2-91.3,0-172.5,59.9-199.4,147.2v599.3h159.6v-212.7c5.9-17.5,21.8-29.6,39.9-30.4,19.4-.8,37.3,11.6,43.7,30.4v212.7h155.8Z"/>
+    </g>
+    <g id="occhi">
+      <g id="occhi1" data-name="occhi">
+        <path class="q-st6" d="M295.4,264.1c-14.1,33-47,54-82.2,52.6-32.9-1.3-62.5-21.8-75.6-52.6"/>
+        <circle class="q-st0" cx="216.5" cy="264.1" r="31.9"/>
+        <path class="q-st1" d="M137.6,264.1c14.1-33.7,47-55,82.2-53.7,32.9,1.3,62.5,22.3,75.6,53.7"/>
+      </g>
+      <g id="occhi2" data-name="occhi">
+        <path class="q-st6" d="M499.7,264.6c-14.1,33-47,54-82.2,52.6-32.9-1.3-62.5-21.8-75.6-52.6"/>
+        <circle class="q-st0" cx="420.8" cy="264.6" r="31.9"/>
+        <path class="q-st1" d="M341.9,264.6c14.1-33.7,47-55,82.2-53.7,32.9,1.3,62.5,22.3,75.6,53.7"/>
+      </g>
+    </g>
+    <g id="naso">
+      <rect id="Naso" class="q-st1" x="295.4" y="343.8" width="41.2" height="21.1"/>
+    </g>
+    <g id="bocca">
+      <rect x="231.5" y="446.3" width="164.5" height="1.7"/>
+    </g>
+    <g id="labbra">
+      <path class="q-st3" d="M282.9,443.6v5.8c0,1.8,1.6,3.3,3.5,3.3h23.2c2.4,0,4.3-1.8,4.3-4.1v-5s-31-.2-31,0Z"/>
+      <path class="q-st3" d="M316,443.6v5.8c0,1.8,1.6,3.3,3.5,3.3h23.2c2.4,0,4.3-1.8,4.3-4.1v-5s-31-.2-31,0Z"/>
+      <path class="q-st2" d="M395.6,449.6c-3,3.9-33.5,42.5-85.1,40.9-47.7-1.5-75-36.2-78.6-40.9h163.7Z"/>
+      <path class="q-st2" d="M396.4,444.4h-165.4c-.2-24.9,21.7-44.7,46.3-43.6,15.4.7,29.1,9.5,36.4,22.3,8-13.9,23.7-23,40.6-22.3,23.1,1.1,42.3,20.3,42,43.6Z"/>
+    </g>
+  </svg>
+
+  <svg class="layer" id="rumore" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 595.3 841.9">
+    <defs>
+      <style>
+        .n-st0 { fill: #e0e0e0; }
+        .n-st1 { fill: #0e0d0e; }
+        .n-st2 { fill: #3766af; }
+        .n-st3 { fill: #3766ae; }
+        .n-st4 { fill: #e6262e; }
+        .n-st5 { fill: #fff; }
+        .n-st6 { fill: #ffd625; }
+      </style>
+    </defs>
+    <g id="Livello_3">
+      <g id="forma">
+        <path class="n-st6" d="M515.5,794.2V169.1C488.5,78.1,407.3,15.6,316,15.6s-172.5,62.5-199.4,153.5v625.1h159.6v-221.9c5.9-18.3,21.8-30.9,39.9-31.7,19.4-.9,37.3,12.1,43.7,31.7v221.9h155.8Z"/>
+      </g>
+    </g>
+    <g id="bocca">
+      <g id="bocca1" data-name="bocca">
+        <rect x="230.9" y="434.3" width="164.5" height="145.3"/>
+      </g>
+    </g>
+    <g id="labbra">
+      <g id="labbra1" data-name="labbra">
+        <path class="n-st4" d="M395.4,580.9c-3,3.7-33.7,40-85.6,38.5-47.9-1.4-75.4-34-79-38.5h164.6Z"/>
+        <path class="n-st4" d="M395.4,432.3h-164.5c-.2-23.4,21.6-42.1,46.1-41,15.4.7,29,8.9,36.2,20.9,8-13.1,23.6-21.7,40.4-20.9,23,1,42.1,19,41.8,41Z"/>
+        <path class="n-st5" d="M314.2,432.4v5.8c0,1.8,1.6,3.3,3.5,3.3h23.2c2.4,0,4.3-1.8,4.3-4.1v-5s-31-.2-31,0h0Z"/>
+        <path class="n-st5" d="M281.1,432.4v5.8c0,1.8,1.6,3.3,3.5,3.3h23.2c2.4,0,4.3-1.8,4.3-4.1v-5s-31-.2-31,0h0Z"/>
+      </g>
+    </g>
+    <g id="occhi">
+      <g id="occhi1" data-name="occhi">
+        <g id="naso">
+          <rect id="Naso" class="n-st2" x="295.4" y="343.8" width="41.2" height="21.1"/>
+        </g>
+        <path class="n-st0" d="M499.7,264.6c-14.1,33-47,54-82.2,52.6-32.9-1.2-62.5-21.8-75.6-52.6,14.1-33.7,47-55,82.2-53.7,32.9,1.3,62.5,22.3,75.6,53.7h0Z"/>
+        <path class="n-st0" d="M295.4,264.1c-14.1,33-47,54-82.2,52.6-32.9-1.3-62.5-21.8-75.6-52.6,14.1-33.7,47-55,82.2-53.7,32.9,1.3,62.5,22.2,75.6,53.7Z"/>
+        <path class="n-st3" d="M341.9,264.1c14.1-33.7,47-55,82.2-53.7,32.9,1.3,62.5,22.3,75.6,53.7"/>
+        <path class="n-st3" d="M137.6,264.1c14.1-33.7,47-55,82.2-53.7,32.9,1.3,62.5,22.3,75.6,53.7"/>
+        <circle class="n-st1" cx="420.8" cy="264.6" r="31.9"/>
+        <circle class="n-st1" cx="216.5" cy="264.1" r="31.9"/>
+      </g>
+    </g>
+  </svg>
+
+  <div id="error-msg"></div>
+</div>
+
+<div id="level-indicator">Livello: 0%</div>
+
+<script>
+let audioContext = null;
+let analyser = null;
+let audioStarted = false;
+const errorEl = document.getElementById('error-msg');
+
+const qSvg = document.getElementById('quiete');
+const nSvg = document.getElementById('rumore');
+
+function getNums(s) {
+  return [...s.matchAll(/-?\d+(?:\.\d+)?/g)].map(m => +m[0]);
+}
+
+function setNums(s, nums) {
+  let i = 0;
+  return s.replace(/-?\d+(?:\.\d+)?/g, () => {
+    const v = nums[i++];
+    return Number.isInteger(v) ? v : v.toFixed(1);
+  });
+}
+
+function toRelPath(d) {
+  const parts = d.split(/(?=[MLHVCSQTAZmlhvcsqtaz])/);
+  let cx = 0, cy = 0, first = true, pcx = 0, pcy = 0;
+  return parts.map(p => {
+    const cmd = p[0];
+    const nums = getNums(p);
+    if (first && cmd === 'M') {
+      cx = nums[0]; cy = nums[1]; first = false;
+      pcx = cx; pcy = cy;
+      return 'M' + nums[0] + ',' + nums[1];
+    }
+    const fix = v => Number.isInteger(v) ? v : +v.toFixed(1);
+    switch (cmd) {
+      case 'M': cx = nums[0]; cy = nums[1]; pcx = cx; pcy = cy; return 'm' + nums[0] + ',' + nums[1];
+      case 'C': {
+        let r = '';
+        for (let i = 0; i + 5 < nums.length; i += 6) {
+          const dx1 = fix(nums[i]-cx), dy1 = fix(nums[i+1]-cy);
+          const dx2 = fix(nums[i+2]-cx), dy2 = fix(nums[i+3]-cy);
+          const dx = fix(nums[i+4]-cx), dy = fix(nums[i+5]-cy);
+          r += 'c' + [dx1,dy1,dx2,dy2,dx,dy].join(',');
+          pcx = fix(dx - dx2); pcy = fix(dy - dy2);
+          cx = nums[i+4]; cy = nums[i+5];
+        }
+        return r;
+      }
+      case 'c':
+        for (let i = 0; i + 5 < nums.length; i += 6) {
+          pcx = fix(nums[i+4] - nums[i+2]); pcy = fix(nums[i+5] - nums[i+3]);
+          cx += nums[i+4]; cy += nums[i+5];
+        }
+        return p;
+      case 'S': {
+        let r = '';
+        for (let i = 0; i + 3 < nums.length; i += 4) {
+          const dx1 = pcx, dy1 = pcy;
+          const dx2 = fix(nums[i]-cx), dy2 = fix(nums[i+1]-cy);
+          const dx = fix(nums[i+2]-cx), dy = fix(nums[i+3]-cy);
+          r += 'c' + [dx1,dy1,dx2,dy2,dx,dy].join(',');
+          pcx = fix(dx - dx2); pcy = fix(dy - dy2);
+          cx = nums[i+2]; cy = nums[i+3];
+        }
+        return r;
+      }
+      case 's': {
+        let r = '';
+        for (let i = 0; i + 3 < nums.length; i += 4) {
+          const dx1 = pcx, dy1 = pcy;
+          const dx2 = nums[i], dy2 = nums[i+1], dx = nums[i+2], dy = nums[i+3];
+          r += 'c' + [dx1,dy1,dx2,dy2,dx,dy].map(fix).join(',');
+          pcx = fix(dx - dx2); pcy = fix(dy - dy2);
+          cx += dx; cy += dy;
+        }
+        return r;
+      }
+      case 'V': { const r = nums[0]-cy; cy = nums[0]; return 'v' + fix(r); }
+      case 'v': cy += nums[0]; return p;
+      case 'H': { const r = nums[0]-cx; cx = nums[0]; return 'h' + fix(r); }
+      case 'h': cx += nums[0]; return p;
+      default: return p;
+    }
+  }).join('');
+}
+
+function normPath(d) {
+  const parts = d.split(/(?=[MLHVCSQTAZmlhvcsqtaz])/);
+  const out = [];
+  for (const p of parts) {
+    const cmd = p[0];
+    const nums = getNums(p);
+    if (nums.length > 6 && (cmd === 'c' || cmd === 'C')) {
+      for (let i = 0; i < nums.length; i += 6) {
+        const chunk = nums.slice(i, i+6);
+        if (chunk.length === 6) {
+          out.push('c' + chunk.map(v => Number.isInteger(v) ? v : +v.toFixed(1)).join(','));
+        }
+      }
+    } else {
+      out.push(p);
+    }
+  }
+  return out.join('');
+}
+
+function lerpNums(a, b, t) {
+  return a.map((v, i) => v + (b[i] - v) * t);
+}
+
+function setFade(els, t) {
+  for (const el of els) el.style.opacity = t;
+}
+
+// Each morph stores: qEl, nEl, shared from/to nums, normalized template for each
+const morphs = [];
+
+function addPathMorph(qEl, nEl, attr, qPrep) {
+  const cleanZ = d => d.replace(/[hv]-?0+(?:\.?0+)?(?=Z)/g, '');
+  const qRaw = cleanZ(qPrep ? qPrep(qEl.getAttribute(attr)) : qEl.getAttribute(attr));
+  const nRaw = cleanZ(nEl.getAttribute(attr));
+  const qTpl = toRelPath(normPath(qRaw));
+  const nTpl = toRelPath(normPath(nRaw));
+  const from = getNums(qTpl);
+  const to = getNums(nTpl);
+  if (from.length !== to.length || from.length === 0) return;
+  morphs.push({els: [{el: qEl, attr, tpl: qTpl}, {el: nEl, attr, tpl: nTpl}], from, to});
+}
+
+function addValMorph(qEl, nEl, attr) {
+  const qV = qEl.getAttribute(attr);
+  const nV = nEl.getAttribute(attr);
+  const from = getNums(qV);
+  const to = getNums(nV);
+  if (from.length !== to.length || from.length === 0) return;
+  morphs.push({els: [{el: qEl, attr, tpl: qV}, {el: nEl, attr, tpl: nV}], from, to});
+}
+
+function initMorph() {
+  // Forma
+  const qForma = qSvg.querySelector('#forma .q-st4');
+  const nForma = nSvg.querySelector('#forma .n-st6');
+  if (qForma && nForma) addPathMorph(qForma, nForma, 'd');
+
+  // Naso
+  const qNaso = qSvg.querySelector('#naso rect');
+  const nNaso = nSvg.querySelector('#naso rect');
+  if (qNaso && nNaso) {
+    for (const a of ['x','y','width','height']) addValMorph(qNaso, nNaso, a);
+  }
+
+  // Occhi — noise SVG has eyes inside #occhi1, order right then left (reversed).
+  // Sort by x-coordinate to pair left↔left, right↔right.
+  // Combine quiete's gray+blue into closed path, morph with noise gray (closed almond).
+  // Blue arcs morph independently (slightly different: #3766af vs #3766ae).
+  const nGrays = [...nSvg.querySelectorAll('.n-st0')].sort((a,b) =>
+    +getNums(a.getAttribute('d'))[0] - +getNums(b.getAttribute('d'))[0]
+  );
+  const nBlues = [...nSvg.querySelectorAll('.n-st3')].sort((a,b) =>
+    +getNums(a.getAttribute('d'))[0] - +getNums(b.getAttribute('d'))[0]
+  );
+  const nCirs = [...nSvg.querySelectorAll('circle.n-st1')].sort((a,b) =>
+    +a.getAttribute('cx') - +b.getAttribute('cx')
+  );
+  [1, 2].forEach(side => {
+    const qGray = qSvg.querySelector('#occhi' + side + ' .q-st6');
+    const qBlue = qSvg.querySelector('#occhi' + side + ' .q-st1');
+    const i = side - 1;
+    if (qGray && qBlue && nGrays[i]) {
+      const bd = qBlue.getAttribute('d');
+      const prep = d => d + bd.replace(/^M[^cC]*/, '') + 'Z';
+      addPathMorph(qGray, nGrays[i], 'd', prep);
+    }
+    if (qBlue && nBlues[i]) addPathMorph(qBlue, nBlues[i], 'd');
+    const qCirc = qSvg.querySelector('#occhi' + side + ' circle');
+    if (qCirc && nCirs[i]) {
+      for (const a of ['cx','cy','r']) addValMorph(qCirc, nCirs[i], a);
+    }
+  });
+
+  // Bocca rect
+  const qBocca = qSvg.querySelector('#bocca rect');
+  const nBocca = nSvg.querySelector('#bocca rect');
+  if (qBocca && nBocca) {
+    for (const a of ['x','y','width','height']) addValMorph(qBocca, nBocca, a);
+  }
+
+  // Labbra — pair by sorting paths by x-coordinate so teeth↔teeth, lips↔lips
+  const qLabbra = [...qSvg.querySelectorAll('#labbra path')].sort((a, b) =>
+    +getNums(a.getAttribute('d'))[0] - +getNums(b.getAttribute('d'))[0]
+  );
+  const nLabbra = [...nSvg.querySelectorAll('#labbra path')].sort((a, b) =>
+    +getNums(a.getAttribute('d'))[0] - +getNums(b.getAttribute('d'))[0]
+  );
+  for (let i = 0; i < Math.min(qLabbra.length, nLabbra.length); i++) {
+    addPathMorph(qLabbra[i], nLabbra[i], 'd');
+  }
+
+  nSvg.style.opacity = '0';
+}
+
+function applyMorph(t) {
+  for (const m of morphs) {
+    const lerped = lerpNums(m.from, m.to, t);
+    for (const target of m.els) {
+      target.el.setAttribute(target.attr, setNums(target.tpl, lerped));
+    }
+  }
+  qSvg.style.opacity = 1 - t;
+  nSvg.style.opacity = t;
+}
+
+async function initAudio() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const source = audioContext.createMediaStreamSource(stream);
+    analyser = audioContext.createAnalyser();
+    analyser.fftSize = 256;
+    source.connect(analyser);
+    return true;
+  } catch (err) {
+    errorEl.textContent = 'Microfono non accessibile. Mostrato stato di quiete.';
+    errorEl.classList.add('visible');
+    return false;
+  }
+}
+
+function getAudioLevel() {
+  if (!analyser) return 0;
+  const data = new Uint8Array(analyser.fftSize);
+  analyser.getByteTimeDomainData(data);
+  let sum = 0;
+  for (let i = 0; i < data.length; i++) {
+    const v = data[i] - 128;
+    sum += v * v;
+  }
+  return Math.min(1, Math.sqrt(sum / data.length) / 128 * 3);
+}
+
+function animate() {
+  const t = getAudioLevel();
+  applyMorph(t);
+  document.getElementById('level-indicator').textContent = 'Livello: ' + Math.round(t * 100) + '%';
+  requestAnimationFrame(animate);
+}
+
+async function startOnInteraction() {
+  if (audioStarted) return;
+  audioStarted = true;
+  document.getElementById('start-hint').classList.add('hidden');
+  if (audioContext && audioContext.state === 'suspended') {
+    await audioContext.resume();
+    return;
+  }
+  const ok = await initAudio();
+  if (!ok && !errorEl.textContent) {
+    errorEl.textContent = 'Microfono non accessibile. Mostrato stato di quiete.';
+    errorEl.classList.add('visible');
+  }
+}
+
+document.addEventListener('click', startOnInteraction, { once: true });
+
+document.addEventListener('DOMContentLoaded', () => {
+  initMorph();
+  animate();
+});
+</script>
+</body>
+</html>

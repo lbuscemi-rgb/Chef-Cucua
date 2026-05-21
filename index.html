@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lucia Buscemi — Archive</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background-color: #0B0B0B;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      color: #F5F5F0;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ——— Hero ——— */
+    .hero {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .hero h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: clamp(56px, 14vw, 120px);
+      color: #F5F5F0;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+    .hero .label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      color: #E5E548;
+      margin-top: 16px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity 0.3s;
+      border: none;
+      background: none;
+      padding: 0;
+    }
+    .hero .label:hover {
+      opacity: 0.6;
+    }
+
+    /* ——— Deck ——— */
+    .deck-section {
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 180px 20px 300px;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .deck {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      height: 560px;
+    }
+    .card {
+      position: absolute;
+      top: 280px; left: 0;
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      padding: 20px;
+      border-radius: 6px;
+      border: none;
+      color: #0B0B0B;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      will-change: transform;
+      user-select: none;
+    }
+    .card-code {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 500;
+      font-size: clamp(10px, 2vw, 12px);
+      letter-spacing: 0.12em;
+      margin-bottom: 2px;
+    }
+    .card-title {
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      font-size: clamp(14px, 3.2vw, 18px);
+      line-height: 1.3;
+    }
+    .card-icon {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card-icon svg {
+      width: clamp(36px, 10vw, 56px);
+      height: clamp(36px, 10vw, 56px);
+      display: block;
+    }
+    .card.lifted .card-code,
+    .card.lifted .card-title { color: #F5F5F0; }
+    .card.lifted .card-icon svg path,
+    .card.lifted .card-icon svg line,
+    .card.lifted .card-icon svg rect,
+    .card.lifted .card-icon svg ellipse,
+    .card.lifted .card-icon svg circle:not([fill]) { stroke: #F5F5F0; }
+    .card.lifted .card-icon svg text,
+    .card.lifted .card-icon svg circle[fill] { fill: #F5F5F0; }
+
+    /* ——— About ——— */
+    .about {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 80px 20px 120px;
+    }
+    .about h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      font-size: clamp(20px, 4vw, 28px);
+      color: #E5E548;
+      margin-bottom: 40px;
+      letter-spacing: -0.01em;
+    }
+    .about p {
+      font-size: 15px;
+      line-height: 1.7;
+      color: #C0C0B8;
+      margin-bottom: 24px;
+    }
+    .about .highlight {
+      color: #F5F5F0;
+    }
+    .about .divider {
+      width: 32px;
+      height: 2px;
+      background: #E5E548;
+      margin: 40px 0;
+    }
+    .about .meta {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #A0A098;
+    }
+    .about .meta strong {
+      color: #F5F5F0;
+      font-weight: 500;
+    }
+    .about .institution {
+      margin-top: 40px;
+      padding-top: 40px;
+      border-top: 1px solid rgba(245,245,240,0.08);
+    }
+    .about .institution p {
+      margin-bottom: 4px;
+    }
+    .about .institution .name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      font-size: 17px;
+      color: #F5F5F0;
+      letter-spacing: -0.01em;
+    }
+
+    @media (max-width: 600px) {
+      .deck-section { padding: 120px 16px 200px; }
+      .deck { height: 380px; }
+      .card { top: 200px; padding: 16px; }
+      .about { padding: 60px 20px 80px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Hero -->
+  <section class="hero">
+    <h1>LUCIA BUSCEMI</h1>
+    <div style="display:flex;gap:32px;margin-top:16px">
+      <button class="label" onclick="document.getElementById('deck-section').scrollIntoView({behavior:'smooth'})">PROJECTS</button>
+      <button class="label" onclick="document.getElementById('about-section').scrollIntoView({behavior:'smooth'})">ABOUT</button>
+    </div>
+  </section>
+
+  <!-- Deck -->
+  <section class="deck-section" id="deck-section">
+    <div class="deck" id="deck"></div>
+  </section>
+
+  <!-- About -->
+  <section class="about" id="about-section">
+    <h2>About</h2>
+    <p>
+      Sito sviluppato durante il workshop <span class="highlight">"No brain, No Gain"</span>,
+      tenuto da <span class="highlight">whateverDev</span>
+      (Andrea Maffei &amp; Rocco Lorenzo Modugno),
+      18–22 Maggio 2026, all'interno dei corsi:
+    </p>
+    <div class="divider"></div>
+    <div class="meta">
+      <p><strong>Interaction Design 2</strong><br>Prof. Alessia Scudieri</p>
+      <p style="margin-top:20px"><strong>Interaction Design 3</strong><br>Prof. Andrea Leonardi &amp; Prof. Marcantonio D'Antoni</p>
+    </div>
+    <div class="institution">
+      <p class="name">ABADIR</p>
+      <p>Accademia di Design e Comunicazione Visiva</p>
+      <p>Sant'Agata li Battiati CT</p>
+      <p>AA 2025–26</p>
+    </div>
+  </section>
+
+  <script>
+    const projects = [
+      { code: 'PRJ_01', title: 'Ricette di Cucua',   path: 'Ricetta -couscous2 1/index.html',      color: 'giallo' },
+      { code: 'PRJ_02', title: 'Pattern Generation',  path: 'Pattern esercizio 1/index.html',       color: 'lilla'  },
+      { code: 'PRJ_03', title: 'Tipografia cinetica', path: 'Tipografia cinetica 1/index.html',     color: 'giallo' },
+      { code: 'PRJ_04', title: 'Maschera Sonora',     path: 'Maschera sonora 1/index.html',         color: 'lilla'  },
+      { code: 'PRJ_05', title: 'Suoniamo insieme',    path: 'progetto marionetta 1/index.html',     color: 'giallo' }
+    ];
+
+    const C = { giallo: '#E5E548', lilla: '#B79DFF' };
+    const B = '#7A0019';
+    const N = projects.length;
+
+    const deck = document.getElementById('deck');
+    const els = {};
+    let order = [0, 1, 2, 3, 4];
+
+    function cascadePos() {
+      const p = [];
+      for (let i = 0; i < N; i++)
+        p.push({ y: i * -70, s: 1 - i * 0.025, z: 100 - i });
+      return p;
+    }
+
+    function layoutAll(animate) {
+      const cp = cascadePos();
+      order.forEach((idx, i) => {
+        const el = els[idx];
+        if (!el) return;
+        const bg = projects[idx].color === 'giallo' ? C.giallo : C.lilla;
+        const v = cp[i];
+        const vars = {
+          y: v.y, scaleX: v.s, scaleY: v.s, rotation: 0,
+          zIndex: v.z, backgroundColor: bg,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+        };
+        if (animate) gsap.to(el, { ...vars, duration: 0.65, ease: 'expo.out' });
+        else gsap.set(el, vars);
+        el.classList.remove('lifted');
+      });
+    }
+
+    function bringToFront(idx) {
+      const pos = order.indexOf(idx);
+      if (pos === 0) return;
+      order.splice(pos, 1);
+      order.unshift(idx);
+      layoutAll(true);
+    }
+
+    projects.forEach((p, i) => {
+      const c = document.createElement('div');
+      c.className = 'card';
+      c.style.backgroundColor = p.color === 'giallo' ? C.giallo : C.lilla;
+      c.innerHTML = `
+        <div class="card-code">${p.code}</div>
+        <div class="card-title">${p.title}</div>
+        <div class="card-icon">${getIcon(i)}</div>`;
+
+      c.addEventListener('mouseenter', () => {
+        bringToFront(i);
+        c.classList.add('lifted');
+        gsap.to(c, {
+          y: '-=10', scaleX: 1.025, scaleY: 1.025, rotation: 0.8,
+          backgroundColor: B,
+          boxShadow: '0 24px 60px rgba(0,0,0,0.8)',
+          duration: 0.45, ease: 'expo.out',
+          overwrite: 'auto'
+        });
+      });
+
+      c.addEventListener('mouseleave', () => {
+        c.classList.remove('lifted');
+        const bg = p.color === 'giallo' ? C.giallo : C.lilla;
+        const pos = order.indexOf(i);
+        const cp = cascadePos();
+        if (pos >= 0 && pos < N) {
+          gsap.to(c, {
+            y: cp[pos].y, scaleX: cp[pos].s, scaleY: cp[pos].s, rotation: 0,
+            backgroundColor: bg,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+            duration: 0.5, ease: 'expo.out',
+            overwrite: 'auto'
+          });
+        }
+      });
+
+      c.addEventListener('click', () => window.open(p.path, '_blank'));
+      deck.appendChild(c);
+      els[i] = c;
+    });
+
+    layoutAll(false);
+
+    function getIcon(index) {
+      const icons = [
+        `<svg width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="#0B0B0B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 28h40l-4 28H16l-4-28z"/><path d="M20 28V16c0-6.6 24-6.6 24 0v12"/><path d="M6 28h52"/><path d="M28 24l8 10"/><path d="M36 24l-8 10"/></svg>`,
+        `<svg width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="#0B0B0B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="18" height="18" rx="3"/><rect x="38" y="8" width="18" height="18" rx="3"/><rect x="8" y="38" width="18" height="18" rx="3"/><rect x="38" y="38" width="18" height="18" rx="3"/><line x1="26" y1="17" x2="38" y2="17"/><line x1="17" y1="26" x2="17" y2="38"/><line x1="47" y1="26" x2="47" y2="38"/><line x1="26" y1="47" x2="38" y2="47"/></svg>`,
+        `<svg width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="#0B0B0B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><text x="32" y="42" font-family="'Space Grotesk',sans-serif" font-size="52" font-weight="700" text-anchor="middle" fill="#0B0B0B" stroke="none">A</text><line x1="6" y1="52" x2="22" y2="48" stroke-width="1.5"/><line x1="58" y1="52" x2="42" y2="48" stroke-width="1.5"/><line x1="10" y1="12" x2="22" y2="30" stroke-width="1.5" stroke-dasharray="2 2"/><line x1="54" y1="12" x2="42" y2="30" stroke-width="1.5" stroke-dasharray="2 2"/></svg>`,
+        `<svg width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="#0B0B0B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 36c0-14 6-24 22-24s22 10 22 24"/><path d="M10 36c-6 0-10 6-10 12s4 12 10 12"/><path d="M54 36c6 0 10 6 10 12s-4 12-10 12"/><path d="M18 36c0-8 4-14 14-14s14 6 14 14"/><path d="M24 40c0-4 2-8 8-8s8 4 8 8"/><circle cx="30" cy="46" r="2" fill="#0B0B0B" stroke="none"/><circle cx="34" cy="46" r="2" fill="#0B0B0B" stroke="none"/></svg>`,
+        `<svg width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="#0B0B0B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="32" cy="38" rx="22" ry="14"/><circle cx="32" cy="38" r="8"/><path d="M26 18c-2-6-8-10-14-10"/><path d="M38 18c2-6 8-10 14-10"/><path d="M30 18c-1-4-4-7-8-8"/><path d="M34 18c1-4 4-7 8-8"/><path d="M24 52l8 6 8-6"/></svg>`
+      ];
+      return icons[index];
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MARE — Kinetic Typography</title>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0e1a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 700;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  #word {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  .letter {
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: 180px;
+    color: #3a6b8c;
+    will-change: transform;
+  }
+
+  #controls {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: rgba(10, 14, 26, 0.88);
+    border: 1px solid rgba(58, 107, 140, 0.25);
+    border-radius: 14px;
+    padding: 14px 24px;
+    backdrop-filter: blur(8px);
+    min-width: 380px;
+    z-index: 10;
+  }
+
+  .control-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .control-row label {
+    color: #4a7a9a;
+    font-size: 10px;
+    font-weight: 500;
+    width: 100px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+  }
+
+  .control-row input[type="range"] {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 3px;
+    background: #1a2a3a;
+    border-radius: 2px;
+    outline: none;
+  }
+
+  .control-row input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #3a6b8c;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .control-row input[type="range"]::-webkit-slider-thumb:hover {
+    background: #7ec8e3;
+  }
+
+  .control-row .value {
+    color: #7ec8e3;
+    font-size: 11px;
+    font-weight: 400;
+    min-width: 30px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+</style>
+</head>
+<body>
+<div id="word"></div>
+
+<div id="controls">
+  <div class="control-row">
+    <label>Wave Speed</label>
+    <input type="range" id="speed" min="0.2" max="3.0" step="0.05" value="1.0">
+    <span class="value" id="speed-val">1.0</span>
+  </div>
+  <div class="control-row">
+    <label>Amplitude</label>
+    <input type="range" id="amplitude" min="0" max="250" step="5" value="70">
+    <span class="value" id="amplitude-val">70</span>
+  </div>
+  <div class="control-row">
+    <label>Frequency</label>
+    <input type="range" id="frequency" min="0.3" max="3.0" step="0.05" value="1.2">
+    <span class="value" id="frequency-val">1.2</span>
+  </div>
+  <div class="control-row">
+    <label>Growth</label>
+    <input type="range" id="growth" min="0" max="5.0" step="0.1" value="2.5">
+    <span class="value" id="growth-val">2.5</span>
+  </div>
+  <div class="control-row">
+    <label>Text Size</label>
+    <input type="range" id="textSize" min="40" max="400" step="5" value="180">
+    <span class="value" id="textSize-val">180</span>
+  </div>
+</div>
+
+<script>
+  const word = "MARE";
+  const container = document.getElementById("word");
+  const letters = [];
+
+  word.split("").forEach(ch => {
+    const span = document.createElement("span");
+    span.className = "letter";
+    span.textContent = ch;
+    container.appendChild(span);
+    letters.push(span);
+  });
+
+  const p = {
+    speed: 1.0,
+    amplitude: 70,
+    frequency: 1.2,
+    growth: 2.5,
+    textSize: 180,
+  };
+
+  // Physics state per letter
+  const state = letters.map(() => ({ x: 0, y: 0, vx: 0, vy: 0 }));
+
+  // Rest positions
+  let offsets = [];
+
+  function layout() {
+    const cw = window.innerWidth;
+    const ch = window.innerHeight;
+    const fs = p.textSize;
+    const spacing = fs * 0.78;
+    const totalW = (letters.length - 1) * spacing;
+    const startX = (cw - totalW) / 2;
+    const centerY = ch / 2;
+    offsets = letters.map((_, i) => ({
+      restX: startX + i * spacing,
+      restY: centerY,
+    }));
+    letters.forEach(l => { l.style.fontSize = fs + "px"; });
+  }
+
+  window.addEventListener("resize", layout);
+
+  function bindSlider(id, key) {
+    const slider = document.getElementById(id);
+    const display = document.getElementById(id + "-val");
+    slider.addEventListener("input", () => {
+      p[key] = parseFloat(slider.value);
+      display.textContent = slider.value;
+      if (key === "textSize") layout();
+    });
+  }
+
+  bindSlider("speed", "speed");
+  bindSlider("amplitude", "amplitude");
+  bindSlider("frequency", "frequency");
+  bindSlider("growth", "growth");
+  bindSlider("textSize", "textSize");
+
+  const REST_COLOR = [58, 107, 140];
+  const PEAK_COLOR = [126, 200, 227];
+
+  function lerpColor(c1, c2, t) {
+    return `rgb(${Math.round(c1[0] + (c2[0] - c1[0]) * t)},${Math.round(c1[1] + (c2[1] - c1[1]) * t)},${Math.round(c1[2] + (c2[2] - c1[2]) * t)})`;
+  }
+
+  function animate(time) {
+    const t = time / 1000;
+
+    // --- Shaped swell envelope ---
+    // Starts at 0 (calm), builds to 1 (giant wave), fades back
+    const raw = 0.5 - 0.5 * Math.cos(t * 0.12);
+    const cycleFrac = ((t * 0.12) % (2 * Math.PI)) / (2 * Math.PI);
+    // Shape: stay calm longer, build progressively
+    const envelope = Math.pow(raw, 0.7);
+    const swellFactor = envelope * p.growth;
+
+    // --- Traveling wave front ---
+    // Sweeps through the word during the first half of the cycle
+    const waveActive = cycleFrac < 0.5;
+    const waveProgress = waveActive ? cycleFrac * 2 : 1;
+    const surgePos = waveActive
+      ? -0.8 + waveProgress * (letters.length + 1.6)
+      : letters.length + 2;
+
+    // --- Scale with text size ---
+    const sizeScale = p.textSize / 180;
+    const amp = p.amplitude * sizeScale;
+    const ampY = amp * 1.5;
+
+    // --- Dynamic physics — system softens as the wave builds ---
+    const stiffness = 0.04 * (1 - swellFactor * 0.06);
+    const damping = 0.93 - swellFactor * 0.015;
+    const groupCenter = 0.004 * Math.max(0, 1 - swellFactor * 0.15);
+
+    // --- Compute wave targets and apply physics ---
+    state.forEach((s, i) => {
+      const phase = t * p.speed + i * p.frequency;
+
+      // Base wave — grows with swell
+      const waveX = amp * Math.sin(phase) * (1 + swellFactor * 0.4);
+      const waveY = ampY * Math.sin(phase + Math.PI * 0.4) * (1 + swellFactor * 0.4);
+
+      // Extra chaotic oscillation during giant wave
+      const chaosX = swellFactor * 30 * sizeScale * Math.sin(phase * 0.7 + t * 0.3 + i * 0.5);
+      const chaosY = swellFactor * 20 * sizeScale * Math.cos(phase * 0.6 + t * 0.2 + i * 0.7);
+
+      // Traveling surge — pushes letters rightward and upward
+      const dist = surgePos - i;
+      const influence = waveActive && dist >= 0
+        ? Math.exp(-(dist * dist) / 2.0)
+        : 0;
+      const pushX = influence * swellFactor * 60 * sizeScale;
+      const pushY = influence * swellFactor * 30 * sizeScale;
+
+      // Target position
+      const targetX = waveX + chaosX + pushX;
+      const targetY = waveY + chaosY + pushY;
+
+      // Spring toward target
+      const fx = (targetX - s.x) * stiffness;
+      const fy = (targetY - s.y) * stiffness;
+
+      s.vx = (s.vx + fx) * damping;
+      s.vy = (s.vy + fy) * damping;
+      s.x += s.vx;
+      s.y += s.vy;
+    });
+
+    // --- Gentle group centering ---
+    const avgX = state.reduce((s, v) => s + v.x, 0) / state.length;
+    const avgY = state.reduce((s, v) => s + v.y, 0) / state.length;
+    state.forEach(s => {
+      s.vx -= avgX * groupCenter;
+      s.vy -= avgY * groupCenter;
+    });
+
+    // --- Apply to DOM ---
+    state.forEach((s, i) => {
+      const rot = 4 * Math.sin(t * p.speed * 0.5 + i * p.frequency + 0.8)
+                + Math.abs(s.x) * 0.02 * (i % 2 === 0 ? 1 : -1);
+
+      const ref = Math.max(amp, 1);
+      const disp = Math.sqrt((s.x / ref) ** 2 + (s.y / (ref * 1.5)) ** 2);
+      const clamped = Math.min(disp / (1 + swellFactor * 0.15) * 1.5, 1.5);
+
+      const off = offsets[i];
+      letters[i].style.transform = `translate(${off.restX + s.x}px, ${off.restY + s.y}px) translate(-50%, -50%) rotate(${rot}deg)`;
+      letters[i].style.color = lerpColor(REST_COLOR, PEAK_COLOR, clamped);
+      letters[i].style.textShadow = clamped > 0.15
+        ? `0 0 ${14 * clamped}px ${lerpColor(REST_COLOR, PEAK_COLOR, clamped)}`
+        : 'none';
+    });
+
+    requestAnimationFrame(animate);
+  }
+
+  layout();
+  requestAnimationFrame(animate);
+</script>
+</body>
+</html>
